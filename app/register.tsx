@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView } from 'react-native';
 import axios from 'axios';
+import { useRouter } from 'expo-router';
 
 const Register: React.FC = () => {
+
+    const router = useRouter();  // Navigation hook
+
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
   const [idNumber, setIdNumber] = useState('');
@@ -35,7 +39,23 @@ const Register: React.FC = () => {
     try {
       const response = await axios.post('http://localhost:3003/api/user', user);
       Alert.alert('Success', 'Registration successful!');
-      console.log(response.data);
+      
+      // Clear the form after successful registration
+      setName('');
+      setSurname('');
+      setIdNumber('');
+      setEmail('');
+      setPassword('');
+      setRole('');
+      setDesignation('');
+      setJoiningDate('');
+      setSalary('');
+      setPhone('');
+      setAddress('');
+      setActive(true);
+
+      // Redirect to the login page
+      router.push('/login');
     } catch (error) {
       Alert.alert('Error', 'Registration failed. Please try again.');
       console.error(error);
