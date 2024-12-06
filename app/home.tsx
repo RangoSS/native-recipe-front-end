@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomePage = () => {
   const [showForm, setShowForm] = useState(true);
-  const [recipes, setRecipes] = useState([]);
+  const [recipes, setRecipes] = useState<any[]>([]); // Recipe data state
   const [recipe, setRecipe] = useState({
     name: '',
     ingredients: '',
@@ -19,24 +19,41 @@ const HomePage = () => {
   // Fetch recipes from the server
   const fetchRecipes = async () => {
     try {
+      // Get userId from AsyncStorage (assuming it's stored as userId)
+      const userId = await AsyncStorage.getItem('userId');
+      console.log('home userId', userId);
+  
+      // Check if userId exists
+      if (!userId) {
+        Alert.alert('Error', 'User not found. Please log in.');
+        return;
+      }
+  
       const token = await AsyncStorage.getItem('userToken');
       const response = await apiClient.get('/recipes', {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      console.log('Response data:', response.data);  // Log the response data
-      // Check if the response data has a recipes array
-      if (response.data && Array.isArray(response.data.recipes)) {
-        // Filter recipes to show only those belonging to the current user
-        setRecipes(response.data.recipes.filter((r) => r.userId === token));
+  
+      console.log('Response data:', response.data); // Log the response data
+  
+      // Access the recipes array correctly
+      const recipes = response.data.recipes || []; // Ensure it's an array
+  
+      // Filter recipes by userId
+      const filteredRecipes = recipes.filter(recipe => recipe.userId === userId);
+  
+      if (Array.isArray(filteredRecipes)) {
+        setRecipes(filteredRecipes);
       } else {
-        throw new Error('Invalid response format');
+        console.error('Error: Recipes data is not an array');
+        setRecipes([]); // Clear the state in case of invalid data
       }
     } catch (error) {
       console.error('Error fetching recipes:', error);
-      Alert.alert('Error', 'Failed to load recipes. Please try again.');
+      Alert.alert('Error', 'Failed to fetch recipes. Please try again.');
     }
   };
+  
 
   useEffect(() => {
     fetchRecipes();
@@ -51,7 +68,8 @@ const HomePage = () => {
   const handleAddRecipe = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
-      const newRecipe = { ...recipe, userId: token }; // Include userId for ownership
+      const userId = await AsyncStorage.getItem('userId');  // Get userId for ownership
+      const newRecipe = { ...recipe, userId }; // Include userId for ownership
       const response = await apiClient.post('/recipes', newRecipe, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -120,28 +138,23 @@ const HomePage = () => {
         )}
 
         <Text style={styles.header}>My Recipes</Text>
-        <FlatList
-          data={recipes}
-          keyExtractor={(item) => item._id} // Use _id instead of id for MongoDB
-          numColumns={2}
-          renderItem={({ item }) => (
-            <View style={styles.recipeCard}>
-              <Text style={styles.recipeName}>{item.name}</Text>
-              <Text style={styles.recipeDetails}>Category: {item.category}</Text>
-              <Text style={styles.recipeDetails}>Servings: {item.servings}</Text>
-              {/* Render ingredients array */}
-              <Text style={styles.recipeDetails}>
-                Ingredients: {item.ingredients && item.ingredients.join(', ')}
-              </Text>
+        <View style={styles.cardContainer}>
+          {recipes.map((recipe, index) => (
+            <View key={recipe._id || index} style={styles.card}>
+              <Text style={styles.cardTitle}>{recipe.name || 'No name available'}</Text>
+              <Text>Category: {recipe.category || 'No category available'}</Text>
+              <Text>Servings: {recipe.servings || 'No servings specified'}</Text>
+              <Text>Ingredients: {recipe.ingredients || 'No ingredients listed'}</Text>
+              <Text>Instructions: {recipe.instructions || 'No instructions provided'}</Text>
               <TouchableOpacity
                 style={styles.deleteButton}
-                onPress={() => handleDeleteRecipe(item._id)} // Use _id for MongoDB
+                onPress={() => handleDeleteRecipe(recipe._id)}
               >
                 <Text style={styles.deleteText}>Delete</Text>
               </TouchableOpacity>
             </View>
-          )}
-        />
+          ))}
+        </View>
       </ScrollView>
     </View>
   );
@@ -196,22 +209,29 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     textAlign: 'center',
   },
-  recipeCard: {
-    flex: 1,
-    backgroundColor: '#ffc107',
-    padding: 15,
-    margin: 5,
-    borderRadius: 10,
-    alignItems: 'center',
+  cardContainer: {
+    marginTop: 20,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
-  recipeName: {
+  card: {
+    backgroundColor: '#fff',
+    width: '48%',
+    marginBottom: 15,
+    borderRadius: 10,
+    padding: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 3, // for Android shadow
+  },
+  cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-  },
-  recipeDetails: {
-    fontSize: 14,
-    color: '#555',
+    marginBottom: 10,
   },
   deleteButton: {
     backgroundColor: '#f44336',

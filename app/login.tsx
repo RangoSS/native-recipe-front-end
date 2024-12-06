@@ -30,9 +30,10 @@ const LoginScreen = () => {
 
         // Assuming the user ID is stored as 'id' in the token payload
         const userId = decodedToken?.id;
-
+     
+        await AsyncStorage.setItem('userId', userId.toString()); // Ensure it's saved as a string
         // Display user ID in an alert or log it to console
-        Alert.alert('Login successful', `User ID: ${userId}`);
+        console.log('here is your userId',userId);
 
         // Navigate to the home screen after login
         router.push('/home');
