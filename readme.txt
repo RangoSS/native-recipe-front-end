@@ -2,6 +2,8 @@
        and the remote is 
         https://github.com/RangoSS/native-recipe-back-end.git (fetch)
 
+        the front-end found at origin  https://github.com/RangoSS/native-recipe-front-end.git (fetch)
+
     "email": "athur@gmail.com",
     "password": "123456"
    
