@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';  // Import AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage'; // For storing token
+import jwt_decode from 'jwt-decode';  // Corrected import
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter();  // Navigation hook
+  const router = useRouter(); // Navigation hook
 
   const handleLogin = async () => {
     try {
@@ -19,12 +20,20 @@ const LoginScreen = () => {
 
       // Check if the response contains the token
       if (response.data.token) {
+        const token = response.data.token;
+
         // Store token in AsyncStorage
-        await AsyncStorage.setItem('userToken', response.data.token);
-        
-        // Display success message
-        Alert.alert('Login successful');
-        
+        await AsyncStorage.setItem('userToken', token);
+
+        // Decode the token to extract user info
+        const decodedToken = jwt_decode(token);
+
+        // Assuming the user ID is stored as 'id' in the token payload
+        const userId = decodedToken?.id;
+
+        // Display user ID in an alert or log it to console
+        Alert.alert('Login successful', `User ID: ${userId}`);
+
         // Navigate to the home screen after login
         router.push('/home');
       } else {
@@ -58,7 +67,7 @@ const LoginScreen = () => {
       
       <TouchableOpacity
         style={styles.registerButton}
-        onPress={() => router.push('/register')}  // Navigate to registration page
+        onPress={() => router.push('/register')} // Navigate to registration page
       >
         <Text style={styles.registerText}>Don't have an account? Register</Text>
       </TouchableOpacity>
