@@ -37,7 +37,7 @@ const Register: React.FC = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:3003/api/user', user);
+      const response = await axios.post('https://native-recipe-back-end.onrender.com/api/user', user);
       Alert.alert('Success', 'Registration successful!');
       
       // Clear the form after successful registration
