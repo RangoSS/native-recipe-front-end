@@ -12,29 +12,28 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     try {
-      // Sending login request to the backend
-      const response = await axios.post('http://localhost:3003/api/login', {
+      // Sending login request to the Vercel backend
+      const response = await axios.post('https://native-recipe-back-end.onrender.com/api/login', {
         email,
         password,
       });
-
+         console.log('checking api response' ,response)
       // Check if the response contains the token
       if (response.data.token) {
         const token = response.data.token;
-
+  
         // Store token in AsyncStorage
         await AsyncStorage.setItem('userToken', token);
-
+  
         // Decode the token to extract user info
         const decodedToken = jwt_decode(token);
-
+  
         // Assuming the user ID is stored as 'id' in the token payload
         const userId = decodedToken?.id;
      
         await AsyncStorage.setItem('userId', userId.toString()); // Ensure it's saved as a string
-        // Display user ID in an alert or log it to console
-        console.log('here is your userId',userId);
-
+       // console.log('Here is your userId:', userId);
+  
         // Navigate to the home screen after login
         router.push('/home');
       } else {
@@ -45,7 +44,7 @@ const LoginScreen = () => {
       Alert.alert('Login error', 'Please try again later.');
     }
   };
-
+  
   return (
     <View style={styles.container}>
       <TextInput
