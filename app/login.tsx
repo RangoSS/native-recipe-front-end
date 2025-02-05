@@ -24,7 +24,8 @@ const LoginScreen = () => {
   
         // Store token in AsyncStorage
         await AsyncStorage.setItem('userToken', token);
-  
+
+        // console.log('recipe token' , token)
         // Decode the token to extract user info
         const decodedToken = jwt_decode(token);
   

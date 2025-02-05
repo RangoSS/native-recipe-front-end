@@ -19,12 +19,7 @@ const Index: React.FC = () => {
           Share your favorite recipes with the world. Add, edit, and explore a variety of culinary delights!
         </Text>
 
-        <TouchableOpacity
-      style={styles.loginButton}
-      onPress={() => router.push('/login')} // Use path navigation to login screen
-    >
-      <Text style={styles.loginText}>Login</Text>
-    </TouchableOpacity>
+       
       </View>
     </ImageBackground>
   );

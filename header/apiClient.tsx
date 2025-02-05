@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Create an Axios instance
 const apiClient = axios.create({
-  baseURL: 'http://localhost:3003/api', // Replace with your API base URL
+  baseURL: 'https://native-recipe-back-end.onrender.com/api', // Replace with your API base URL
   timeout: 10000,
 });
 
