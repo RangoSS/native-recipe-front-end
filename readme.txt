@@ -1,3 +1,24 @@
+    
+    /////////////////////steps of buoding android////////////////////////////////////
+Step-by-Step Guide to Build an Android APK Using Expo and EAS
+1. 
+npm install -g expo-cli
+.
+
+First, install eas-cli globally:
+
+npm install -g eas-cli
+
+eas build:configure
+
+eas build --platform android --profile preview
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    
+    
+    
      the back-end of this project found at  C:\Users\tshid\Documents\MLAB\REACT-NATIVE\native-recipe-back-end> 
        and the remote is 
         https://github.com/RangoSS/native-recipe-back-end.git (fetch)
